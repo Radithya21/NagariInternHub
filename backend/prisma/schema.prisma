@@ -1,0 +1,69 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id         Int             @id @default(autoincrement())
+  name       String
+  email      String          @unique
+  password   String
+  role       Role            @default(intern)
+  created_at DateTime        @default(now())
+
+  internProfile InternProfile?
+  attendances   Attendance[]
+}
+
+model InternProfile {
+  id               Int      @id @default(autoincrement())
+  institution_name String?
+  program          String?
+  start_date       DateTime?
+  end_date         DateTime?
+
+  user   User @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  user_id Int @unique
+}
+
+model Attendance {
+  id            Int       @id @default(autoincrement())
+  timestamp     DateTime  @default(now())
+  latitude      Float?
+  longitude     Float?
+  location_name String?
+
+  user   User @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  user_id Int
+}
+
+model OnboardingContent {
+  id         Int      @id @default(autoincrement())
+  title      String
+  content    String?
+  updated_at DateTime @updatedAt
+}
+
+model Employee {
+  id           Int    @id @default(autoincrement())
+  name         String
+  position     String?
+  division     String?
+  linkedin_url String?
+  photo_url    String?
+}
+
+enum Role {
+  admin
+  intern
+}
