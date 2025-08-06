@@ -1,21 +1,28 @@
-import express from 'express';
-import cors from 'cors';
-import dotenv from 'dotenv';
-import { PrismaClient } from '@prisma/client';
+// src/server.js
+const express = require('express');
+const cors = require('cors');
+const dotenv = require('dotenv');
+const authRoutes = require('./modules/auth/auth.route');
+const userRoutes = require('./modules/user/user.route');
+const attendanceRoutes = require('./modules/attendance/attendance.route');
+const employeeRoutes = require('./modules/directory/employee.route');
+const statsRoutes = require('./modules/stats/stats.route');
 
 dotenv.config();
-const app = express();
-const prisma = new PrismaClient();
 
+const app = express();
 app.use(cors());
 app.use(express.json());
+app.use('/uploads', express.static('uploads'));
 
-// Sample route
-app.get('/', (req, res) => res.send('NagariInternHub API is running 🚀'));
-
-// TODO: Import and use routes from modules (auth, attendance, etc.)
+// Register routes
+app.use('/api/auth', authRoutes);
+app.use('/api/users', userRoutes);
+app.use('/api/attendance', attendanceRoutes);
+app.use('/api/employees', employeeRoutes); 
+app.use('/api/stats', statsRoutes);
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
-  console.log(`Server running on http://localhost:${PORT}`);
+  console.log(`Server running on port ${PORT}`);
 });

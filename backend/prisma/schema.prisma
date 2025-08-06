@@ -47,13 +47,6 @@ model Attendance {
   user_id Int
 }
 
-model OnboardingContent {
-  id         Int      @id @default(autoincrement())
-  title      String
-  content    String?
-  updated_at DateTime @updatedAt
-}
-
 model Employee {
   id           Int    @id @default(autoincrement())
   name         String
