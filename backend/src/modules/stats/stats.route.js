@@ -3,6 +3,6 @@ const router = express.Router();
 const { getInternsPerMonth } = require('./stats.controller');
 const { isAdmin } = require('../../middleware/authMiddleware');
 
-router.get('/interns-per-month', getInternsPerMonth);
+router.get('/interns' ,getInternsPerMonth);
 
 module.exports = router;

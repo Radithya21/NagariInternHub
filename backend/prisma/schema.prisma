@@ -42,9 +42,15 @@ model Attendance {
   latitude      Float?
   longitude     Float?
   location_name String?
+  keterangan keterangan?
 
   user   User @relation(fields: [user_id], references: [id], onDelete: Cascade)
   user_id Int
+}
+
+enum keterangan {
+  tepat_waktu
+  terlambat
 }
 
 model Employee {

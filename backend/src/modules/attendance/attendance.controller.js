@@ -3,39 +3,52 @@ const prisma = new PrismaClient();
 const { startOfDay, endOfDay } = require('date-fns');
 
 const createAttendance = async (req, res) => {
-  const userId = req.user.id;
+  const userId = req.user.id; // pastikan middleware authenticate sudah set req.user
   const { latitude, longitude, location_name } = req.body;
+  const now = new Date();
 
-  try {
-    const today = new Date();
-    const existing = await prisma.attendance.findFirst({
-      where: {
-        user_id: userId,
-        timestamp: {
-          gte: startOfDay(today),
-          lte: endOfDay(today),
-        },
+  // Cek apakah sudah absen hari ini
+  const awalHari = new Date(now);
+  awalHari.setHours(0, 0, 0, 0);
+  const akhirHari = new Date(now);
+  akhirHari.setHours(23, 59, 59, 999);
+
+  const sudahAbsen = await prisma.attendance.findFirst({
+    where: {
+      user_id: userId,
+      timestamp: {
+        gte: awalHari,
+        lte: akhirHari,
       },
-    });
+    },
+  });
 
-    if (existing) {
-      return res.status(400).json({ message: 'Anda sudah absen hari ini.' });
-    }
-
-    const attendance = await prisma.attendance.create({
-      data: {
-        user_id: userId,
-        latitude,
-        longitude,
-        location_name,
-      },
-    });
-
-    res.json(attendance);
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ error: 'Gagal melakukan absensi.' });
+  if (sudahAbsen) {
+    return res.status(400).json({ message: 'Kamu sudah absen hari ini' });
   }
+
+  // Tentukan keterangan
+  const batasTerlambat = new Date(now);
+  batasTerlambat.setHours(7, 45, 0, 0);
+  // Gunakan getTime() untuk perbandingan waktu
+  const keterangan = now.getTime() > batasTerlambat.getTime() ? 'terlambat' : 'tepat_waktu';
+
+  // Simpan attendance
+  const absen = await prisma.attendance.create({
+    data: {
+      user_id: userId,
+      latitude,
+      longitude,
+      location_name,
+      timestamp: now,
+      keterangan,
+    },
+  });
+
+  let pesan = keterangan === 'terlambat'
+    ? 'Absensi berhasil, tapi kamu terlambat!'
+    : 'Absensi berhasil, kamu tepat waktu!';
+  return res.json({ message: pesan, absen });
 };
 
 const getMyAttendance = async (req, res) => {

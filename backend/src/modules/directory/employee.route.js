@@ -7,7 +7,7 @@ const { PrismaClient } = require('@prisma/client');
 const prisma = new PrismaClient();
 
 
-router.get('/', authenticate, getEmployees);
+router.get('/', getEmployees);
 
 // POST /employees - Tambah Pegawai Baru
 router.post('/', upload.single('photo'), async (req, res) => {
