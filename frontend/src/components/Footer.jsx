@@ -23,10 +23,9 @@ function Footer() {
                 <div className="flex-1 mb-8 md:mb-0">
                     <div className="font-semibold text-white mb-3">Quick Links</div>
                     <ul className="space-y-2 text-sm">
-                        <li><a href="#jadwal" className="hover:text-blue-400 transition">Jadwal Kerja</a></li>
-                        <li><a href="#dresscode" className="hover:text-blue-400 transition">Dress Code</a></li>
-                        <li><a href="#peraturan" className="hover:text-blue-400 transition">Peraturan</a></li>
-                        <li><a href="#kontak" className="hover:text-blue-400 transition">Kontak</a></li>
+                        <li><a href="#jadwal" onClick={e => { e.preventDefault(); const el = document.getElementById('jadwal'); if (el) { const y = el.getBoundingClientRect().top + window.pageYOffset - 80; window.scrollTo({ top: y, behavior: 'smooth' }); } }} className="hover:text-blue-400 transition">Jadwal Kerja</a></li>
+                        <li><a href="#dresscode" onClick={e => { e.preventDefault(); document.getElementById('dresscode')?.scrollIntoView({ behavior: 'smooth' }); }} className="hover:text-blue-400 transition">Dress Code</a></li>
+                        <li><a href="#peraturan" onClick={e => { e.preventDefault(); document.getElementById('peraturan')?.scrollIntoView({ behavior: 'smooth' }); }} className="hover:text-blue-400 transition">Peraturan</a></li>
                     </ul>
                 </div>
                 {/* Support */}

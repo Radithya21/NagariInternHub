@@ -1,6 +1,7 @@
 import { useNavigate } from 'react-router-dom';
 import { useState } from 'react';
 import axios from 'axios';
+import logo from '../assets/logo.svg';
 
 function LoginPage() {
   const navigate = useNavigate();
@@ -44,23 +45,21 @@ function LoginPage() {
       {/* Background decorative elements */}
       <div className="absolute top-10 left-10 w-72 h-72 bg-gradient-to-br from-orange-200 to-blue-200 rounded-full opacity-20 blur-3xl"></div>
       <div className="absolute bottom-10 right-10 w-96 h-96 bg-gradient-to-br from-blue-200 to-orange-200 rounded-full opacity-20 blur-3xl"></div>
-      
+
       <div className="relative w-full max-w-md">
         {/* Login Card */}
         <div className="bg-white/80 backdrop-blur-lg rounded-3xl shadow-2xl border border-white/20 p-8 relative overflow-hidden">
           {/* Decorative gradient background */}
           <div className="absolute top-0 right-0 w-40 h-40 bg-gradient-to-br from-orange-100 to-blue-100 rounded-full -mr-20 -mt-20 opacity-30"></div>
           <div className="absolute bottom-0 left-0 w-32 h-32 bg-gradient-to-tr from-blue-100 to-orange-100 rounded-full -ml-16 -mb-16 opacity-30"></div>
-          
+
           <div className="relative">
             {/* Logo/Icon Section */}
             <div className="text-center mb-8">
               <div className="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-r from-orange-500 to-blue-500 rounded-full mb-6 shadow-lg">
-                <svg className="w-10 h-10 text-white" fill="currentColor" viewBox="0 0 20 20">
-                  <path fillRule="evenodd" d="M18 8a6 6 0 01-7.743 5.743L10 14l-0.257-0.257A6 6 0 1118 8zM10 2a6 6 0 00-6 6c0 1.887.454 3.665 1.257 5.234l.321.492.321-.492C6.546 11.665 7 9.887 7 8a3 3 0 016 0c0 1.887.454 3.665 1.257 5.234l.321.492.321-.492A5.99 5.99 0 0016 8a6 6 0 00-6-6z" clipRule="evenodd" />
-                </svg>
+                <img src={logo} alt="Nagari Intern Hub Logo" className="w-12 h-12 md:w-16 md:h-16 object-contain filter brightness-0 invert" />
               </div>
-              
+
               <h1 className="text-3xl font-bold bg-gradient-to-r from-orange-600 to-blue-600 bg-clip-text text-transparent mb-2">
                 Nagari Intern Hub
               </h1>
@@ -158,19 +157,6 @@ function LoginPage() {
             </form>
 
             {/* Additional Info */}
-            <div className="mt-8 text-center">
-              <div className="bg-gradient-to-r from-orange-50 to-blue-50 rounded-xl p-4 border border-orange-100">
-                <p className="text-sm text-gray-600 mb-2 font-medium">Demo Credentials:</p>
-                <div className="space-y-1 text-xs">
-                  <p className="font-mono bg-white px-2 py-1 rounded border">
-                    Admin: admin@nagarihub.id
-                  </p>
-                  <p className="font-mono bg-white px-2 py-1 rounded border">
-                    Default Password: intern123
-                  </p>
-                </div>
-              </div>
-            </div>
           </div>
         </div>
 
