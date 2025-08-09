@@ -1,6 +1,35 @@
+import { motion, useAnimation } from 'framer-motion';
+import { useEffect, useRef } from 'react';
+
 function DressCodeSection() {
+    const controls = useAnimation();
+    const ref = useRef();
+
+    useEffect(() => {
+        const handleScroll = () => {
+            if (!ref.current) return;
+            const rect = ref.current.getBoundingClientRect();
+            const inView = rect.top < window.innerHeight && rect.bottom > 0;
+            if (inView) {
+                controls.start({ opacity: 1, y: 0 });
+            } else {
+                controls.start({ opacity: 0, y: 40 });
+            }
+        };
+        window.addEventListener('scroll', handleScroll);
+        handleScroll();
+        return () => window.removeEventListener('scroll', handleScroll);
+    }, [controls]);
+
     return (
-        <section id="dresscode" className="flex flex-col items-center justify-center px-6 py-20 bg-gradient-to-b from-gray-50 to-white">
+        <motion.section
+            ref={ref}
+            id="dresscode"
+            initial={{ opacity: 0, y: 40 }}
+            animate={controls}
+            transition={{ duration: 0.8, ease: 'easeOut' }}
+            className="flex flex-col items-center justify-center px-6 py-20 bg-gradient-to-b from-gray-50 to-white"
+        >
             {/* Header Badge */}
             <div className="inline-flex items-center gap-2 px-6 py-3 mb-6 rounded-full bg-orange-50 text-orange-700 font-medium text-sm border border-orange-100 shadow-sm transition-all duration-300 hover:shadow-md">
                 <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-orange-500"><circle cx="12" cy="7" r="4" /><path d="M4 20v-2a4 4 0 014-4h8a4 4 0 014 4v2" /></svg>
@@ -139,7 +168,7 @@ function DressCodeSection() {
                     </div>
                 </div>
             </div>
-        </section>
+        </motion.section>
     );
 }
 

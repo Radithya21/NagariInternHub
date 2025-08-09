@@ -1,6 +1,35 @@
+import { motion, useAnimation } from 'framer-motion';
+import { useEffect, useRef } from 'react';
+
 function JadwalKerjaSection() {
+    const controls = useAnimation();
+    const ref = useRef();
+
+    useEffect(() => {
+        const handleScroll = () => {
+            if (!ref.current) return;
+            const rect = ref.current.getBoundingClientRect();
+            const inView = rect.top < window.innerHeight && rect.bottom > 0;
+            if (inView) {
+                controls.start({ opacity: 1, y: 0 });
+            } else {
+                controls.start({ opacity: 0, y: 40 });
+            }
+        };
+        window.addEventListener('scroll', handleScroll);
+        handleScroll();
+        return () => window.removeEventListener('scroll', handleScroll);
+    }, [controls]);
+
     return (
-        <section id="jadwal" className="flex flex-col items-center justify-center px-4 mt-8">
+        <motion.section
+            ref={ref}
+            id="jadwal"
+            initial={{ opacity: 0, y: 40 }}
+            animate={controls}
+            transition={{ duration: 0.8, ease: 'easeOut' }}
+            className="flex flex-col items-center justify-center px-4 mt-8"
+        >
             <div className="inline-block px-4 py-1 mb-4 rounded-full bg-blue-50 text-blue-700 font-medium text-sm">
                 <svg width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="inline-block align-middle text-blue-500 mr-1"><circle cx="9" cy="9" r="7" /><path d="M9 5v4l3 2" /></svg>
                 Jadwal & Waktu
@@ -50,7 +79,7 @@ function JadwalKerjaSection() {
                     </ul>
                 </div>
             </div>
-        </section>
+        </motion.section>
     );
 }
 

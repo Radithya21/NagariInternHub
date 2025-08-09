@@ -22,6 +22,7 @@ function AdminDashboard() {
     // State untuk dashboard
     const [stats, setStats] = useState([]);
     const [loading, setLoading] = useState(true);
+    const [totalInterns, setTotalInterns] = useState(0);
 
     // State untuk modal registrasi
     const [showModal, setShowModal] = useState(false);
@@ -59,8 +60,12 @@ function AdminDashboard() {
             try {
                 const res = await axios.get('http://localhost:5000/api/stats/interns');
                 setStats(res.data);
+                // Ambil total intern unik
+                const totalRes = await axios.get('http://localhost:5000/api/stats/interns/total');
+                setTotalInterns(totalRes.data.total);
             } catch (err) {
                 setStats([]);
+                setTotalInterns(0);
             } finally {
                 setLoading(false);
             }
@@ -164,15 +169,6 @@ function AdminDashboard() {
                                 <h1 className="text-3xl font-bold text-gray-800 mb-2">Dashboard Admin</h1>
                                 <p className="text-gray-600">Kelola sistem magang dengan mudah. Pantau statistik dan lakukan registrasi magang baru melalui dashboard yang komprehensif ini.</p>
                             </div>
-                            <button
-                                onClick={() => setShowModal(true)}
-                                className="group inline-flex items-center gap-2 bg-gradient-to-r from-orange-500 to-blue-500 hover:from-orange-600 hover:to-blue-600 text-white px-6 py-3 rounded-2xl transition-all duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-1 font-semibold"
-                            >
-                                <svg className="w-5 h-5 group-hover:rotate-90 transition-transform duration-300" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24">
-                                    <path d="M12 5v14M5 12h14" />
-                                </svg>
-                                Registrasi Magang
-                            </button>
                         </div>
                         <div className="mt-6 w-24 h-1 bg-gradient-to-r from-orange-500 to-blue-400 rounded-full"></div>
                     </div>
@@ -187,7 +183,7 @@ function AdminDashboard() {
                                     </svg>
                                 </div>
                                 <div>
-                                    <p className="text-2xl font-bold text-gray-800">{stats.reduce((sum, item) => sum + item.total, 0)}</p>
+                                    <p className="text-2xl font-bold text-gray-800">{totalInterns}</p>
                                     <p className="text-sm text-gray-600">Total Magang</p>
                                 </div>
                             </div>

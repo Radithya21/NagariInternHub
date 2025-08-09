@@ -1,3 +1,4 @@
+import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import NaraImg from '../assets/NARA.png';
 
@@ -12,9 +13,19 @@ function OnboardingPage1() {
       <div className="absolute bottom-32 left-32 w-40 h-40 bg-purple-200 rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-pulse animation-delay-2000"></div>
 
       {/* Main Content */}
-      <div className="relative w-full max-w-2xl mx-auto flex flex-col items-center justify-center">
+      <motion.div
+        initial={{ opacity: 0, y: 40 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.8, ease: 'easeOut' }}
+        className="relative w-full max-w-2xl mx-auto flex flex-col items-center justify-center"
+      >
         {/* Character Image */}
-        <div className="relative mb-12">
+        <motion.div
+          initial={{ scale: 0.9, opacity: 0 }}
+          animate={{ scale: 1, opacity: 1 }}
+          transition={{ duration: 0.8, delay: 0.2, ease: 'easeOut' }}
+          className="relative mb-12"
+        >
           {/* Glow Effect */}
           <div className="absolute inset-0 bg-gradient-to-r from-orange-400 to-blue-400 blur-2xl opacity-20 scale-110 animate-pulse"></div>
 
@@ -31,10 +42,15 @@ function OnboardingPage1() {
           <div className="absolute -top-2 -right-2 w-4 h-4 bg-orange-400 rounded-full animate-bounce"></div>
           <div className="absolute -bottom-4 -left-4 w-3 h-3 bg-blue-400 rounded-full animate-bounce animation-delay-500"></div>
           <div className="absolute top-8 -left-8 w-2 h-2 bg-purple-400 rounded-full animate-bounce animation-delay-1000"></div>
-        </div>
+        </motion.div>
 
         {/* Text Content */}
-        <div className="text-center mb-12 space-y-4">
+        <motion.div
+          initial={{ opacity: 0, y: 30 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.7, delay: 0.5, ease: 'easeOut' }}
+          className="text-center mb-12 space-y-4"
+        >
           <h1 className="text-3xl md:text-4xl font-bold">
             <span className="text-gray-700">Halo, aku </span>
             <span className="bg-gradient-to-r from-orange-500 to-orange-400 bg-clip-text text-transparent">
@@ -53,10 +69,15 @@ function OnboardingPage1() {
           <p className="text-gray-500 max-w-md mx-auto text-lg leading-relaxed mt-6">
             Mari mulai perjalanan magang yang menyenangkan bersama kami! ✨
           </p>
-        </div>
+        </motion.div>
 
         {/* CTA Button */}
-        <div className="relative"> {/* Tambah margin bawah agar Progress Indicator tidak terpotong */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.7, delay: 0.8, ease: 'easeOut' }}
+          className="relative"
+        >
           {/* Button Glow */}
           <div className="absolute inset-0 bg-gradient-to-r from-orange-500 to-blue-500 rounded-2xl blur opacity-25 scale-110"></div>
 
@@ -80,9 +101,9 @@ function OnboardingPage1() {
               </svg>
             </div>
           </button>
-        </div>
+        </motion.div>
 
-      </div>
+      </motion.div>
 
       {/* Additional Styles for Animations */}
       <style jsx>{`

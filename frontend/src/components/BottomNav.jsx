@@ -1,11 +1,11 @@
 import { useLocation, useNavigate } from 'react-router-dom';
-import { FaHome, FaUser, FaComments, FaUserEdit, FaKey } from 'react-icons/fa';
+import { FaHome, FaUser, FaComments, FaUserEdit, FaKey, FaUserFriends, FaRegCalendarCheck, FaIdBadge, FaUserCircle } from 'react-icons/fa';
 
 const navs = [
     { label: 'Home', icon: <FaHome />, path: '/home' },
-    { label: 'Absensi', icon: <FaUser />, path: '/absensi' },
-    { label: 'Connect', icon: <FaComments />, path: '/direktori' },
-    { label: 'Profile', icon: <FaUserEdit />, path: '/profile' },
+    { label: 'Absensi', icon: <FaRegCalendarCheck />, path: '/absensi' },
+    { label: 'Connect', icon: <FaUserFriends />, path: '/direktori' },
+    { label: 'Profile', icon: <FaUserCircle />, path: '/profile' },
 ];
 
 function BottomNav() {

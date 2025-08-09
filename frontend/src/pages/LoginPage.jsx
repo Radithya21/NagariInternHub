@@ -1,7 +1,9 @@
 import { useNavigate } from 'react-router-dom';
 import { useState } from 'react';
 import axios from 'axios';
+import { motion } from 'framer-motion';
 import logo from '../assets/logo.svg';
+import toast, { Toaster } from 'react-hot-toast';
 
 function LoginPage() {
   const navigate = useNavigate();
@@ -9,6 +11,7 @@ function LoginPage() {
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
+  const [emailError, setEmailError] = useState("");
 
   const handleLogin = async () => {
     setLoading(true);
@@ -25,10 +28,10 @@ function LoginPage() {
       } else if (userRole === 'intern' || userRole === 'magang') {
         navigate('/home');
       } else {
-        alert('Role tidak dikenali!');
+        toast.error('Role tidak dikenali!');
       }
     } catch (err) {
-      alert('Login gagal!');
+      toast.error(err?.response?.data?.message || 'Login gagal!');
     } finally {
       setLoading(false);
     }
@@ -40,15 +43,34 @@ function LoginPage() {
     }
   };
 
+  const validateEmail = (value) => {
+    if (!value.includes("@")) {
+      setEmailError("Email harus mengandung karakter @");
+    } else {
+      setEmailError("");
+    }
+  };
+
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-orange-50 flex items-center justify-center p-4">
+    <motion.div
+      initial={{ opacity: 0, y: 40 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.8, ease: 'easeOut' }}
+      className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-orange-50 flex items-center justify-center p-4"
+    >
+      <Toaster position="top-center" />
       {/* Background decorative elements */}
       <div className="absolute top-10 left-10 w-72 h-72 bg-gradient-to-br from-orange-200 to-blue-200 rounded-full opacity-20 blur-3xl"></div>
       <div className="absolute bottom-10 right-10 w-96 h-96 bg-gradient-to-br from-blue-200 to-orange-200 rounded-full opacity-20 blur-3xl"></div>
 
       <div className="relative w-full max-w-md">
         {/* Login Card */}
-        <div className="bg-white/80 backdrop-blur-lg rounded-3xl shadow-2xl border border-white/20 p-8 relative overflow-hidden">
+        <motion.div
+          initial={{ opacity: 0, scale: 0.97 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 0.7, delay: 0.2, ease: 'easeOut' }}
+          className="bg-white/80 backdrop-blur-lg rounded-3xl shadow-2xl border border-white/20 p-8 relative overflow-hidden"
+        >
           {/* Decorative gradient background */}
           <div className="absolute top-0 right-0 w-40 h-40 bg-gradient-to-br from-orange-100 to-blue-100 rounded-full -mr-20 -mt-20 opacity-30"></div>
           <div className="absolute bottom-0 left-0 w-32 h-32 bg-gradient-to-tr from-blue-100 to-orange-100 rounded-full -ml-16 -mb-16 opacity-30"></div>
@@ -86,11 +108,13 @@ function LoginPage() {
                     type="email"
                     placeholder="Masukkan email Anda"
                     value={email}
-                    onChange={e => setEmail(e.target.value)}
+                    onChange={e => { setEmail(e.target.value); validateEmail(e.target.value); }}
                     onKeyPress={handleKeyPress}
-                    className="w-full pl-12 pr-4 py-3 border-2 border-gray-200 rounded-xl focus:border-transparent focus:ring-2 focus:ring-gradient-to-r focus:from-orange-500 focus:to-blue-500 focus:outline-none transition-all duration-300 bg-gray-50 focus:bg-white"
-                    required
+                    className={`w-full pl-12 pr-4 py-3 border-2 rounded-xl focus:border-transparent focus:ring-2 focus:ring-gradient-to-r focus:from-orange-500 focus:to-blue-500 focus:outline-none transition-all duration-300 bg-gray-50 focus:bg-white ${emailError ? 'border-orange-400' : 'border-gray-200'}`}
                   />
+                  {emailError && (
+                    <span className="absolute left-0 -bottom-6 text-orange-500 text-xs font-semibold">{emailError}</span>
+                  )}
                 </div>
               </div>
 
@@ -158,16 +182,21 @@ function LoginPage() {
 
             {/* Additional Info */}
           </div>
-        </div>
+        </motion.div>
 
         {/* Footer */}
-        <div className="text-center mt-6">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.7, delay: 0.7, ease: 'easeOut' }}
+          className="text-center mt-6"
+        >
           <p className="text-gray-500 text-sm">
             © 2025 Nagari Intern Hub. Sistem Manajemen Magang Terpadu.
           </p>
-        </div>
+        </motion.div>
       </div>
-    </div>
+    </motion.div>
   );
 }
 

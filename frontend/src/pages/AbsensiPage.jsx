@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import axios from 'axios';
+import { toast } from 'react-hot-toast';
 import BottomNav from '../components/BottomNav';
 
 function AbsensiPage() {
@@ -76,9 +77,9 @@ function AbsensiPage() {
                     Authorization: `Bearer ${token}`
                 }
             });
-            alert(response.data.message);
+            toast.success(response.data.message);
         } catch (error) {
-            alert(error.response?.data?.message || 'Gagal absen!');
+            toast.error(error.response?.data?.message || 'Gagal absen!');
             console.error(error);
         } finally {
             setLoading(false);
