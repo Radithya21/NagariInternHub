@@ -194,7 +194,7 @@ function AbsensiPage() {
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
                         </svg>
                     </div>
-                    <h1 className="text-3xl font-bold text-gray-800 mb-2">Absensi Karyawan</h1>
+                    <h1 className="text-3xl font-bold text-gray-800 mb-2">Absensi Intern</h1>
                     <p className="text-gray-600">Pastikan Anda berada di area kantor untuk melakukan absensi</p>
                 </motion.div>
 
