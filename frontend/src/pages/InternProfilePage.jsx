@@ -14,23 +14,31 @@ function InternProfilePage() {
   const [confirmPassword, setConfirmPassword] = useState('');
 
   useEffect(() => {
+    const token = localStorage.getItem('token');
+    if (!token) {
+      toast.error('Anda harus login untuk mengakses halaman ini.');
+      navigate('/login');
+      return;
+    }
+
     const fetchProfile = async () => {
       try {
         const res = await axios.get('http://localhost:5000/api/users/me', {
-          headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
+          headers: { Authorization: `Bearer ${token}` }
         });
         setProfile({
           institution_name: res.data.internProfile?.institution_name || '',
           program: res.data.internProfile?.program || '',
         });
-      } catch {
-        toast.error('Gagal mengambil data profil!');
+      } catch (error) {
+        toast.error('Gagal memuat profil.');
+        console.error(error);
       } finally {
         setLoading(false);
       }
     };
     fetchProfile();
-  }, []);
+  }, [navigate]);
 
   const handleProfileSave = async (e) => {
     e.preventDefault();

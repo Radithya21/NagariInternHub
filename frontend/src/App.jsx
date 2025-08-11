@@ -7,7 +7,6 @@ import AdminDashboard from './pages/AdminDashboard';
 import AbsensiPage from './pages/AbsensiPage';
 import Connect from './pages/Connect';
 import PegawaiList from './pages/admin/PegawaiList';
-import PegawaiForm from './pages/admin/PegawaiForm';
 import InternProfilePage from './pages/InternProfilePage';
 
 
@@ -22,8 +21,6 @@ function App() {
       <Route path="/absensi" element={<AbsensiPage />} />
       <Route path="/direktori" element={<Connect />} />
       <Route path="/admin/pegawai" element={<PegawaiList />} />
-      <Route path="/admin/pegawai/tambah" element={<PegawaiForm />} />
-      <Route path="/admin/pegawai/edit/:id" element={<PegawaiForm />} />
       <Route path="/profile" element={<InternProfilePage />} />
     </Routes>
   );

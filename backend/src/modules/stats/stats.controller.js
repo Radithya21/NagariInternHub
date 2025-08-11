@@ -1,4 +1,4 @@
-const { getInternsStats } = require('./stats.service');
+const { getInternsStats, getTotalInterns: getTotalInternsService } = require('./stats.service');
 
 const getInternsPerMonth = async (req, res) => {
   try {
@@ -16,4 +16,14 @@ const getInternsPerMonth = async (req, res) => {
   }
 };
 
-module.exports = { getInternsPerMonth };
+const getTotalInterns = async (req, res) => {
+  try {
+    const data = await getTotalInternsService();
+    res.json({ total: typeof data === 'bigint' ? data.toString() : data });
+  } catch (error) {
+    console.error('Error getting total interns:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+};
+
+module.exports = { getInternsPerMonth, getTotalInterns };

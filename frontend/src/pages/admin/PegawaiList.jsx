@@ -7,6 +7,12 @@ function PegawaiList() {
     const [pegawai, setPegawai] = useState([]);
     const [page, setPage] = useState(1);
     const [loading, setLoading] = useState(false);
+    const [showModal, setShowModal] = useState(false);
+    const [form, setForm] = useState({ name: '', position: '', linkedin_url: '', photo: null });
+    const [showEditModal, setShowEditModal] = useState(false);
+    const [editForm, setEditForm] = useState({ id: null, name: '', position: '', linkedin_url: '', photo: null });
+    const [showDeleteModal, setShowDeleteModal] = useState(false);
+    const [deleteId, setDeleteId] = useState(null);
     const rowsPerPage = 8;
     const totalPages = Math.ceil(pegawai.length / rowsPerPage);
     const currentData = pegawai.slice((page - 1) * rowsPerPage, page * rowsPerPage);
@@ -28,19 +34,70 @@ function PegawaiList() {
     }, []);
 
     useEffect(() => {
-        if (page > totalPages && totalPages > 0) setPage(totalPages);
-    }, [pegawai, totalPages]);
+        if (page > totalPages && totalPages > 0) {
+            setPage(totalPages);
+        }
+    }, [pegawai, totalPages, page]);
 
-    const handleDelete = async (id) => {
-        if (!confirm('Yakin ingin menghapus data ini?')) return;
+    const handleModalSubmit = async (e) => {
+        e.preventDefault();
         try {
-            setLoading(true);
-            await axios.delete(`http://localhost:3000/api/pegawai/${id}`);
+            const formData = new FormData();
+            formData.append('name', form.name);
+            formData.append('position', form.position);
+            formData.append('linkedin_url', form.linkedin_url);
+            if (form.photo) formData.append('photo', form.photo);
+            await axios.post('http://localhost:5000/api/employees', formData, { headers: { 'Content-Type': 'multipart/form-data' } });
+            setShowModal(false);
+            setForm({ name: '', position: '', linkedin_url: '', photo: null });
+            fetchPegawai();
+        } catch {
+            alert('Gagal menyimpan data');
+        }
+    };
+
+    const handleEditClick = (pegawai) => {
+        setEditForm({
+            id: pegawai.id,
+            name: pegawai.name,
+            position: pegawai.position,
+            linkedin_url: pegawai.linkedin_url || '',
+            photo: null,
+        });
+        setShowEditModal(true);
+    };
+
+    const handleEditSubmit = async (e) => {
+        e.preventDefault();
+        try {
+            const formData = new FormData();
+            formData.append('name', editForm.name);
+            formData.append('position', editForm.position);
+            formData.append('linkedin_url', editForm.linkedin_url);
+            if (editForm.photo) formData.append('photo', editForm.photo);
+            await axios.put(`http://localhost:5000/api/employees/${editForm.id}`, formData, {
+                headers: { 'Content-Type': 'multipart/form-data' },
+            });
+            setShowEditModal(false);
             fetchPegawai();
         } catch (err) {
-            alert('Gagal menghapus data');
-        } finally {
-            setLoading(false);
+            alert('Gagal mengupdate pegawai');
+        }
+    };
+
+    const handleDeleteClick = (id) => {
+        setDeleteId(id);
+        setShowDeleteModal(true);
+    };
+
+    const handleDeleteConfirm = async () => {
+        try {
+            await axios.delete(`http://localhost:5000/api/employees/${deleteId}`);
+            setShowDeleteModal(false);
+            setDeleteId(null);
+            fetchPegawai();
+        } catch (err) {
+            alert('Gagal menghapus pegawai');
         }
     };
 
@@ -50,7 +107,7 @@ function PegawaiList() {
             <div className="hidden md:block h-full py-8 pl-6 pr-2">
                 <Sidebar active="pegawai" />
             </div>
-            
+
             {/* Main Content */}
             <div className="flex-1 flex flex-col h-full">
                 <div className="p-6 flex-1 flex flex-col overflow-hidden">
@@ -61,15 +118,15 @@ function PegawaiList() {
                                 <h1 className="text-3xl font-bold text-gray-800 mb-2">Daftar Pegawai</h1>
                                 <p className="text-gray-600">Kelola data pegawai Bank Nagari</p>
                             </div>
-                            <Link
-                                to="/admin/pegawai/tambah"
+                            <button
+                                onClick={() => setShowModal(true)}
                                 className="group inline-flex items-center gap-2 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white px-6 py-3 rounded-2xl transition-all duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-1 font-semibold"
                             >
                                 <svg className="w-5 h-5 group-hover:rotate-90 transition-transform duration-300" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24">
-                                    <path d="M12 5v14M5 12h14"/>
+                                    <path d="M12 5v14M5 12h14" />
                                 </svg>
                                 Tambah Pegawai
-                            </Link>
+                            </button>
                         </div>
                         <div className="mt-6 w-24 h-1 bg-gradient-to-r from-blue-500 to-orange-400 rounded-full"></div>
                     </div>
@@ -80,10 +137,10 @@ function PegawaiList() {
                             <div className="flex items-center gap-3">
                                 <div className="w-12 h-12 bg-gradient-to-r from-blue-500 to-blue-600 rounded-xl flex items-center justify-center">
                                     <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24">
-                                        <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
-                                        <circle cx="9" cy="7" r="4"/>
-                                        <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
-                                        <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+                                        <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
+                                        <circle cx="9" cy="7" r="4" />
+                                        <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
+                                        <path d="M16 3.13a4 4 0 0 1 0 7.75" />
                                     </svg>
                                 </div>
                                 <div>
@@ -92,16 +149,16 @@ function PegawaiList() {
                                 </div>
                             </div>
                         </div>
-                        
+
                         <div className="bg-white rounded-2xl p-4 shadow-lg border border-gray-100">
                             <div className="flex items-center gap-3">
                                 <div className="w-12 h-12 bg-gradient-to-r from-orange-500 to-orange-600 rounded-xl flex items-center justify-center">
                                     <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24">
-                                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
-                                        <polyline points="14,2 14,8 20,8"/>
-                                        <line x1="16" y1="13" x2="8" y2="13"/>
-                                        <line x1="16" y1="17" x2="8" y2="17"/>
-                                        <polyline points="10,9 9,9 8,9"/>
+                                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+                                        <polyline points="14,2 14,8 20,8" />
+                                        <line x1="16" y1="13" x2="8" y2="13" />
+                                        <line x1="16" y1="17" x2="8" y2="17" />
+                                        <polyline points="10,9 9,9 8,9" />
                                     </svg>
                                 </div>
                                 <div>
@@ -110,12 +167,12 @@ function PegawaiList() {
                                 </div>
                             </div>
                         </div>
-                        
+
                         <div className="bg-white rounded-2xl p-4 shadow-lg border border-gray-100">
                             <div className="flex items-center gap-3">
                                 <div className="w-12 h-12 bg-gradient-to-r from-green-500 to-green-600 rounded-xl flex items-center justify-center">
                                     <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24">
-                                        <path d="M22 12h-4l-3 9L9 3l-3 9H2"/>
+                                        <path d="M22 12h-4l-3 9L9 3l-3 9H2" />
                                     </svg>
                                 </div>
                                 <div>
@@ -131,7 +188,7 @@ function PegawaiList() {
                         <div className="p-6 border-b border-gray-100">
                             <h3 className="text-xl font-semibold text-gray-800">Data Pegawai</h3>
                         </div>
-                        
+
                         <div className="flex-1 overflow-auto">
                             {loading ? (
                                 <div className="flex items-center justify-center h-64">
@@ -152,7 +209,7 @@ function PegawaiList() {
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        {currentData.map((item, index) => (
+                                        {currentData.map((item) => (
                                             <tr key={item.id} className="group hover:bg-gradient-to-r hover:from-blue-50 hover:to-orange-50 transition-all duration-300">
                                                 <td className="p-4 border-b border-gray-100">
                                                     <div className="flex justify-center">
@@ -168,8 +225,8 @@ function PegawaiList() {
                                                         ) : (
                                                             <div className="h-12 w-12 bg-gradient-to-r from-gray-300 to-gray-400 rounded-full flex items-center justify-center">
                                                                 <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24">
-                                                                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
-                                                                    <circle cx="12" cy="7" r="4"/>
+                                                                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+                                                                    <circle cx="12" cy="7" r="4" />
                                                                 </svg>
                                                             </div>
                                                         )}
@@ -192,7 +249,7 @@ function PegawaiList() {
                                                             className="inline-flex items-center gap-2 text-blue-600 hover:text-blue-800 transition-colors duration-300 font-medium"
                                                         >
                                                             <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
-                                                                <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 01-2.063-2.065 2.064 2.064 0 112.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/>
+                                                                <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 01-2.063-2.065 2.064 2.064 0 112.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z" />
                                                             </svg>
                                                             Lihat Profil
                                                         </a>
@@ -202,23 +259,23 @@ function PegawaiList() {
                                                 </td>
                                                 <td className="p-4 border-b border-gray-100">
                                                     <div className="flex items-center justify-center gap-2">
-                                                        <Link
-                                                            to={`/admin/pegawai/edit/${item.id}`}
+                                                        <button
+                                                            onClick={() => handleEditClick(item)}
                                                             className="inline-flex items-center gap-1 bg-gradient-to-r from-amber-400 to-amber-500 hover:from-amber-500 hover:to-amber-600 text-white px-3 py-2 rounded-xl transition-all duration-300 shadow-md hover:shadow-lg transform hover:-translate-y-1 text-sm font-medium"
                                                         >
                                                             <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24">
-                                                                <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
-                                                                <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
+                                                                <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" />
+                                                                <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" />
                                                             </svg>
                                                             Edit
-                                                        </Link>
+                                                        </button>
                                                         <button
-                                                            onClick={() => handleDelete(item.id)}
+                                                            onClick={() => handleDeleteClick(item.id)}
                                                             className="inline-flex items-center gap-1 bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white px-3 py-2 rounded-xl transition-all duration-300 shadow-md hover:shadow-lg transform hover:-translate-y-1 text-sm font-medium"
                                                         >
                                                             <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24">
-                                                                <polyline points="3,6 5,6 21,6"/>
-                                                                <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>
+                                                                <polyline points="3,6 5,6 21,6" />
+                                                                <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
                                                             </svg>
                                                             Hapus
                                                         </button>
@@ -245,11 +302,11 @@ function PegawaiList() {
                                     className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-gradient-to-r from-gray-100 to-gray-200 hover:from-gray-200 hover:to-gray-300 text-gray-600 font-semibold disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-300 shadow-md hover:shadow-lg transform hover:-translate-y-1 disabled:transform-none"
                                 >
                                     <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24">
-                                        <polyline points="15,18 9,12 15,6"/>
+                                        <polyline points="15,18 9,12 15,6" />
                                     </svg>
                                     Previous
                                 </button>
-                                
+
                                 <div className="flex gap-1">
                                     {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
                                         let pageNum;
@@ -262,23 +319,22 @@ function PegawaiList() {
                                         } else {
                                             pageNum = page - 2 + i;
                                         }
-                                        
+
                                         return (
                                             <button
                                                 key={pageNum}
                                                 onClick={() => setPage(pageNum)}
-                                                className={`w-10 h-10 rounded-xl font-semibold transition-all duration-300 ${
-                                                    page === pageNum 
-                                                        ? 'bg-gradient-to-r from-blue-600 to-blue-700 text-white shadow-lg transform scale-110' 
-                                                        : 'bg-gradient-to-r from-gray-100 to-gray-200 hover:from-gray-200 hover:to-gray-300 text-gray-600 hover:shadow-md hover:-translate-y-1'
-                                                }`}
+                                                className={`w-10 h-10 rounded-xl font-semibold transition-all duration-300 ${page === pageNum
+                                                    ? 'bg-gradient-to-r from-blue-600 to-blue-700 text-white shadow-lg transform scale-110'
+                                                    : 'bg-gradient-to-r from-gray-100 to-gray-200 hover:from-gray-200 hover:to-gray-300 text-gray-600 hover:shadow-md hover:-translate-y-1'
+                                                    }`}
                                             >
                                                 {pageNum}
                                             </button>
                                         );
                                     })}
                                 </div>
-                                
+
                                 <button
                                     onClick={() => setPage(page + 1)}
                                     disabled={page === totalPages}
@@ -286,9 +342,185 @@ function PegawaiList() {
                                 >
                                     Next
                                     <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24">
-                                        <polyline points="9,18 15,12 9,6"/>
+                                        <polyline points="9,18 15,12 9,6" />
                                     </svg>
                                 </button>
+                            </div>
+                        </div>
+                    )}
+
+                    {/* Modal Tambah Pegawai */}
+                    {showModal && (
+                        <div className="fixed inset-0 z-50 flex items-center justify-center bg-white/30 backdrop-blur-sm">
+                            <div className="w-full max-w-lg bg-white rounded-3xl shadow-xl border border-gray-100 p-8 flex flex-col gap-6 relative">
+                                <button
+                                    type="button"
+                                    onClick={() => setShowModal(false)}
+                                    className="absolute top-4 right-4 text-gray-400 hover:text-red-500 text-2xl font-bold"
+                                >
+                                    ×
+                                </button>
+                                <div className="mb-2">
+                                    <h1 className="text-3xl font-bold text-gray-800 mb-2">Tambah Pegawai</h1>
+                                    <div className="w-20 h-1 bg-gradient-to-r from-blue-500 to-orange-400 rounded-full"></div>
+                                </div>
+                                <form onSubmit={handleModalSubmit} className="flex flex-col gap-5">
+                                    <div>
+                                        <label className="block text-gray-700 font-semibold mb-1">Nama</label>
+                                        <input
+                                            type="text"
+                                            placeholder="Nama"
+                                            value={form.name}
+                                            onChange={e => setForm({ ...form, name: e.target.value })}
+                                            className="w-full p-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-400 focus:outline-none text-gray-800 bg-gray-50"
+                                            required
+                                        />
+                                    </div>
+                                    <div>
+                                        <label className="block text-gray-700 font-semibold mb-1">Jabatan</label>
+                                        <input
+                                            type="text"
+                                            placeholder="Jabatan"
+                                            value={form.position}
+                                            onChange={e => setForm({ ...form, position: e.target.value })}
+                                            className="w-full p-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-400 focus:outline-none text-gray-800 bg-gray-50"
+                                            required
+                                        />
+                                    </div>
+                                    <div>
+                                        <label className="block text-gray-700 font-semibold mb-1">Link LinkedIn</label>
+                                        <input
+                                            type="url"
+                                            placeholder="Link LinkedIn"
+                                            value={form.linkedin_url}
+                                            onChange={e => setForm({ ...form, linkedin_url: e.target.value })}
+                                            className="w-full p-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-400 focus:outline-none text-gray-800 bg-gray-50"
+                                        />
+                                    </div>
+                                    <div>
+                                        <label className="block text-gray-700 font-semibold mb-1">Foto</label>
+                                        <input
+                                            type="file"
+                                            accept="image/*"
+                                            onChange={e => setForm({ ...form, photo: e.target.files[0] })}
+                                            className="w-full p-3 border border-gray-200 rounded-xl bg-gray-50"
+                                        />
+                                    </div>
+                                    <button
+                                        type="submit"
+                                        className="group inline-flex items-center justify-center gap-2 bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white px-6 py-3 rounded-2xl transition-all duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-1 font-semibold text-lg"
+                                    >
+                                        <svg className="w-5 h-5 group-hover:rotate-90 transition-transform duration-300" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24">
+                                            <path d="M12 5v14M5 12h14" />
+                                        </svg>
+                                        Simpan
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+                    )}
+
+                    {/* Modal Edit Pegawai */}
+                    {showEditModal && (
+                        <div className="fixed inset-0 z-50 flex items-center justify-center bg-white/30 backdrop-blur-sm">
+                            <div className="w-full max-w-lg bg-white rounded-3xl shadow-xl border border-gray-100 p-8 flex flex-col gap-6 relative">
+                                <button
+                                    type="button"
+                                    onClick={() => setShowEditModal(false)}
+                                    className="absolute top-4 right-4 text-gray-400 hover:text-red-500 text-2xl font-bold"
+                                >
+                                    ×
+                                </button>
+                                <div className="mb-2">
+                                    <h1 className="text-3xl font-bold text-gray-800 mb-2">Edit Pegawai</h1>
+                                    <div className="w-20 h-1 bg-gradient-to-r from-blue-500 to-orange-400 rounded-full"></div>
+                                </div>
+                                <form onSubmit={handleEditSubmit} className="flex flex-col gap-5">
+                                    <div>
+                                        <label className="block text-gray-700 font-semibold mb-1">Nama</label>
+                                        <input
+                                            type="text"
+                                            placeholder="Nama"
+                                            value={editForm.name}
+                                            onChange={e => setEditForm({ ...editForm, name: e.target.value })}
+                                            className="w-full p-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-400 focus:outline-none text-gray-800 bg-gray-50"
+                                            required
+                                        />
+                                    </div>
+                                    <div>
+                                        <label className="block text-gray-700 font-semibold mb-1">Jabatan</label>
+                                        <input
+                                            type="text"
+                                            placeholder="Jabatan"
+                                            value={editForm.position}
+                                            onChange={e => setEditForm({ ...editForm, position: e.target.value })}
+                                            className="w-full p-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-400 focus:outline-none text-gray-800 bg-gray-50"
+                                            required
+                                        />
+                                    </div>
+                                    <div>
+                                        <label className="block text-gray-700 font-semibold mb-1">Link LinkedIn</label>
+                                        <input
+                                            type="url"
+                                            placeholder="Link LinkedIn"
+                                            value={editForm.linkedin_url}
+                                            onChange={e => setEditForm({ ...editForm, linkedin_url: e.target.value })}
+                                            className="w-full p-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-400 focus:outline-none text-gray-800 bg-gray-50"
+                                        />
+                                    </div>
+                                    <div>
+                                        <label className="block text-gray-700 font-semibold mb-1">Foto</label>
+                                        <input
+                                            type="file"
+                                            accept="image/*"
+                                            onChange={e => setEditForm({ ...editForm, photo: e.target.files[0] })}
+                                            className="w-full p-3 border border-gray-200 rounded-xl bg-gray-50"
+                                        />
+                                    </div>
+                                    <button
+                                        type="submit"
+                                        className="group inline-flex items-center justify-center gap-2 bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white px-6 py-3 rounded-2xl transition-all duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-1 font-semibold text-lg"
+                                    >
+                                        <svg className="w-5 h-5 group-hover:rotate-90 transition-transform duration-300" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24">
+                                            <path d="M12 5v14M5 12h14" />
+                                        </svg>
+                                        Simpan
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+                    )}
+
+                    {/* Modal Konfirmasi Hapus */}
+                    {showDeleteModal && (
+                        <div className="fixed inset-0 z-50 flex items-center justify-center bg-white/30 backdrop-blur-sm">
+                            <div className="w-full max-w-md bg-white rounded-3xl shadow-xl border border-gray-100 p-8 flex flex-col gap-6 relative items-center">
+                                <button
+                                    type="button"
+                                    onClick={() => setShowDeleteModal(false)}
+                                    className="absolute top-4 right-4 text-gray-400 hover:text-red-500 text-2xl font-bold"
+                                >
+                                    ×
+                                </button>
+                                <svg className="w-16 h-16 text-red-500 mb-2" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24">
+                                    <polyline points="3,6 5,6 21,6" />
+                                    <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
+                                </svg>
+                                <h2 className="text-xl font-bold text-gray-800 mb-2 text-center">Yakin ingin menghapus pegawai ini?</h2>
+                                <div className="flex gap-4 mt-2">
+                                    <button
+                                        onClick={handleDeleteConfirm}
+                                        className="px-6 py-2 rounded-xl bg-gradient-to-r from-red-500 to-red-600 text-white font-semibold shadow hover:from-red-600 hover:to-red-700 transition-all duration-300"
+                                    >
+                                        Ya, Hapus
+                                    </button>
+                                    <button
+                                        onClick={() => setShowDeleteModal(false)}
+                                        className="px-6 py-2 rounded-xl bg-gradient-to-r from-gray-200 to-gray-300 text-gray-700 font-semibold shadow hover:from-gray-300 hover:to-gray-400 transition-all duration-300"
+                                    >
+                                        Batal
+                                    </button>
+                                </div>
                             </div>
                         </div>
                     )}

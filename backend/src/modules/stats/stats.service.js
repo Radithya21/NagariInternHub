@@ -14,4 +14,9 @@ const getInternsStats = async () => {
   return result;
 };
 
-module.exports = { getInternsStats };
+const getTotalInterns = async () => {
+  const result = await prisma.user.count({ where: { role: 'intern' } });
+  return result;
+};
+
+module.exports = { getInternsStats, getTotalInterns };

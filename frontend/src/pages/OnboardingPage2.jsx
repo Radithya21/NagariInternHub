@@ -16,14 +16,15 @@ function OnboardingPage2() {
       <div className="absolute bottom-0 right-0 w-80 h-80 bg-gradient-to-br from-blue-200 to-orange-200 rounded-full opacity-20 blur-3xl translate-x-1/2 translate-y-1/2"></div>
       <div className="absolute top-1/2 left-1/4 w-64 h-64 bg-gradient-to-br from-orange-100 to-blue-100 rounded-full opacity-30 blur-2xl"></div>
 
-      <div className="relative w-full max-w-2xl md:max-w-3xl lg:max-w-4xl h-full flex flex-col justify-between py-4">
-        {/* Main Content Container */}
-        <motion.div
-          initial={{ opacity: 0, y: 60, scale: 0.98 }}
-          animate={{ opacity: 1, y: 0, scale: 1 }}
-          transition={{ duration: 0.8, delay: 0.15, type: 'spring', stiffness: 60, damping: 14 }}
-          className="text-center flex-1 flex flex-col justify-center"
-        >
+      {/* Kontainer utama, button di bawah konten utama */}
+      <motion.div
+        initial={{ opacity: 0, y: 60, scale: 0.98 }}
+        animate={{ opacity: 1, y: 0, scale: 1 }}
+        transition={{ duration: 0.8, delay: 0.15, type: 'spring', stiffness: 60, damping: 14 }}
+        className="relative w-full max-w-2xl md:max-w-3xl lg:max-w-4xl flex flex-col items-center justify-center"
+      >
+        {/* Main Content */}
+        <div className="text-center w-full flex flex-col items-center">
           {/* Hero Section */}
           <div className="mb-8 md:mb-12">
             {/* Logo/Icon */}
@@ -95,26 +96,40 @@ function OnboardingPage2() {
               <p className="text-gray-600 text-xs md:text-base hidden md:block">Informasi kontak dan profil pegawai</p>
             </div>
           </div>
-        </motion.div>
+        </div>
 
-        {/* Bottom Section - CTA and Progress */}
+        {/* CTA Button, posisinya sama seperti OnboardingPage1 */}
         <motion.div
-          initial={{ opacity: 0, y: 40, scale: 0.97 }}
-          animate={{ opacity: 1, y: 0, scale: 1 }}
-          transition={{ duration: 0.7, delay: 0.7, type: 'spring', stiffness: 80, damping: 16 }}
-          className="flex flex-col items-center space-y-5 md:space-y-6"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.7, delay: 0.8, ease: 'easeOut' }}
+          className="relative mt-4"
         >
+          {/* Button Glow */}
+          <div className="absolute inset-0 bg-gradient-to-r from-orange-500 to-blue-500 rounded-2xl blur opacity-25 scale-110"></div>
+
+          {/* Main Button */}
           <button
-            className="group px-10 py-4 md:px-16 md:py-5 bg-gradient-to-r from-orange-500 to-blue-500 text-white font-bold text-lg md:text-xl rounded-2xl hover:from-orange-600 hover:to-blue-600 transform hover:scale-105 transition-all duration-300 shadow-xl hover:shadow-2xl flex items-center space-x-3"
+            className="relative px-12 py-4 bg-gradient-to-r from-orange-500 to-blue-500 text-white font-bold text-lg rounded-2xl hover:from-orange-600 hover:to-blue-600 transform hover:scale-105 hover:-translate-y-1 transition-all duration-300 shadow-xl hover:shadow-2xl flex items-center gap-3 group"
             onClick={() => navigate('/login')}
           >
             <span>Mulai Perjalanan</span>
-            <svg className="w-6 h-6 md:w-7 md:h-7 group-hover:translate-x-1 transition-transform" fill="currentColor" viewBox="0 0 20 20">
-              <path fillRule="evenodd" d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z" clipRule="evenodd" />
-            </svg>
+            <div className="flex items-center justify-center w-8 h-8 bg-white/20 rounded-full group-hover:bg-white/30 transition-colors duration-300">
+              <svg
+                className="w-5 h-5 transform group-hover:translate-x-1 transition-transform duration-300"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                viewBox="0 0 24 24"
+              >
+                <path d="M9 5l7 7-7 7" />
+              </svg>
+            </div>
           </button>
         </motion.div>
-      </div>
+      </motion.div>
     </motion.div>
   );
 }

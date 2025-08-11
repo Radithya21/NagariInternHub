@@ -1,6 +1,8 @@
 import { motion } from 'framer-motion';
 import { Toaster } from 'react-hot-toast';
 import { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { toast } from 'react-hot-toast';
 import axios from 'axios';
 import BottomNav from '../components/BottomNav';
 
@@ -40,10 +42,27 @@ const FILTER_OPTIONS = [
 ];
 
 const Connect = () => {
+    const navigate = useNavigate();
     const [pegawai, setPegawai] = useState([]);
     const [search, setSearch] = useState("");
     const [filter, setFilter] = useState("");
     const [filteredPegawai, setFilteredPegawai] = useState([]);
+
+    useEffect(() => {
+        // Proteksi autentikasi
+        const token = localStorage.getItem('token');
+        if (!token) {
+            if (!sessionStorage.getItem('redirectedToLogin')) {
+                toast.dismiss();
+                toast.error('Anda harus login untuk mengakses halaman ini.');
+                sessionStorage.setItem('redirectedToLogin', 'true');
+            }
+            navigate('/login', { replace: true });
+            return;
+        }
+        // Jika sudah login, hapus flag agar toast bisa muncul lagi jika logout
+        sessionStorage.removeItem('redirectedToLogin');
+    }, [navigate]);
 
     useEffect(() => {
         axios.get('http://localhost:5000/api/employees')

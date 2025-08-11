@@ -1,3 +1,4 @@
+import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useState } from 'react';
 import axios from 'axios';
@@ -6,6 +7,10 @@ import logo from '../assets/logo.svg';
 import toast, { Toaster } from 'react-hot-toast';
 
 function LoginPage() {
+  useEffect(() => {
+    sessionStorage.removeItem('redirectedToLogin');
+  }, []);
+
   const navigate = useNavigate();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
