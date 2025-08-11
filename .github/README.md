@@ -39,6 +39,7 @@ Clone this repository to your local machine:
 ```bash
 git clone https://github.com/username/nagariinternhub.git
 cd nagariinternhub
+npm install
 ```
 
 Enter the `backend` directory and install all necessary dependencies:
